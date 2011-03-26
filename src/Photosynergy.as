@@ -10,10 +10,7 @@ public class Photosynergy extends Engine {
                 Data.load("photosynergy-data");
 
                 FP.console.enable();
+                FP.world = new Game;
         }
-
-        // override public function init():void {
-        //         FP.world = new Introscreen;
-        // }
 }
 }
