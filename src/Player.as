@@ -31,11 +31,26 @@ public class Player extends Entity {
 		doGravity();
 		doFriction();
 
+		var leftWall:Number = (FP.world as Game).leftWall(x, y);
+		var rightWall:Number = (FP.world as Game).rightWall(x, y);
+
 		x += vel.x;
+
+		if (x <= leftWall) {
+			x = leftWall;
+			vel.x = Math.max(vel.x, 0);
+		}
+		else if (x >= rightWall) {
+			x = rightWall;
+			vel.x = Math.min(vel.x, 0);
+		}
+
+		var floor:Number = (FP.world as Game).floor(x, y);
+
 		y += vel.y;
 
-		if (y >= 300) {
-			y = 300;
+		if (y >= floor) {
+			y = floor;
 			vel.y = Math.min(vel.y, 0);
 			airborne = false;
 		}
