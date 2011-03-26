@@ -11,6 +11,7 @@ public class Game extends World {
 		FP.console.log("hi");
 		player = new Player;
 		add(player);
+		add(new Light);
 		FP.console.log("hi3");
 	}
 }

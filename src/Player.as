@@ -4,7 +4,6 @@ import net.flashpunk.*;
 import net.flashpunk.utils.*;
 import net.flashpunk.graphics.*;
 import net.flashpunk.debug.*;
-import flash.geom.Point;
 
 public class Player extends Entity {
 	public var vel:vec = new vec(0,0);
