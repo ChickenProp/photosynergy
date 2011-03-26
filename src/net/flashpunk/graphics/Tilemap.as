@@ -68,8 +68,10 @@
 			row %= _rows;
 			_tile.x = (index % _setColumns) * _tile.width;
 			_tile.y = uint(index / _setColumns) * _tile.height;
+			_point.x = column * _tile.width;
+			_point.y = row * _tile.height;
 			_map.setPixel(column, row, index);
-			draw(column * _tile.width, row * _tile.height, _set, _tile);
+			copyPixels(_set, _tile, _point, null, null, false);
 		}
 		
 		/**

@@ -19,7 +19,8 @@
 	{
 		/**
 		 * The blending mode used by Draw functions. This will not
-		 * apply to Draw.line(), but will apply to Draw.linePlus().
+		 * apply to Draw.line() or Draw.circle(), but will apply
+		 * to Draw.linePlus() and Draw.circlePlus().
 		 */
 		public static var blend:String;
 		
@@ -54,9 +55,9 @@
 		 * @param	y2		Ending y position.
 		 * @param	color	Color of the line.
 		 */
-		public static function line(x1:int, y1:int, x2:int, y2:int, color:uint = 0xFFFFFF):void
+		public static function line(x1:int, y1:int, x2:int, y2:int, color:uint = 0xFFFFFF, alpha:Number = 1.0):void
 		{
-			if (color < 0xFF000000) color = 0xFF000000 | color;
+			color = (uint(alpha * 0xFF) << 24) | (color & 0xFFFFFF);
 			
 			// get the drawing positions
 			x1 -= _camera.x;
@@ -154,7 +155,7 @@
 		 * @param	alpha	Alpha of the line.
 		 * @param	thick	The thickness of the line.
 		 */
-		public static function linePlus(x1:int, y1:int, x2:int, y2:int, color:uint = 0xFF000000, alpha:Number = 1, thick:Number = 1):void
+		public static function linePlus(x1:Number, y1:Number, x2:Number, y2:Number, color:uint = 0xFF000000, alpha:Number = 1, thick:Number = 1):void
 		{
 			_graphics.clear();
 			_graphics.lineStyle(thick, color, alpha, false, LineScaleMode.NONE);
@@ -172,7 +173,7 @@
 		 * @param	color		Color of the rectangle.
 		 * @param	alpha		Alpha of the rectangle.
 		 */
-		public static function rect(x:int, y:int, width:uint, height:uint, color:uint = 0xFFFFFF, alpha:Number = 1):void
+		public static function rect(x:Number, y:Number, width:Number, height:Number, color:uint = 0xFFFFFF, alpha:Number = 1):void
 		{
 			if (alpha >= 1 && !blend)
 			{
@@ -184,7 +185,7 @@
 				_target.fillRect(_rect, color);
 				return;
 			}
-			if (color >= 0xFF000000) color = 0xFFFFFF & color;
+			if (color > 0xFFFFFF) color = 0xFFFFFF & color;
 			_graphics.clear();
 			_graphics.beginFill(color, alpha);
 			_graphics.drawRect(x - _camera.x, y - _camera.y, width, height);
@@ -244,7 +245,7 @@
 		 * @param	fill		If the circle should be filled with the color (true) or just an outline (false).
 		 * @param	thick		How thick the outline should be (only applicable when fill = false).
 		 */
-		public static function circlePlus(x:int, y:int, radius:Number, color:uint = 0xFFFFFF, alpha:Number = 1, fill:Boolean = true, thick:int = 1):void
+		public static function circlePlus(x:Number, y:Number, radius:Number, color:uint = 0xFFFFFF, alpha:Number = 1, fill:Boolean = true, thick:Number = 1):void
 		{
 			_graphics.clear();
 			if (fill)
@@ -300,7 +301,7 @@
 				_target.fillRect(_rect, color);
 				return;
 			}
-			if (color >= 0xFF000000) color = 0xFFFFFF & color;
+			if (color > 0xFFFFFF) color = 0xFFFFFF & color;
 			_graphics.clear();
 			_graphics.beginFill(color, alpha);
 			_graphics.drawRect(e.x - e.originX - _camera.x, e.y - e.originY - _camera.y, e.width, e.height);
@@ -318,10 +319,10 @@
 		 * @param	color	Color of the curve
 		 * @param	alpha	Alpha transparency.
 		 */
-		public static function curve(x1:int, y1:int, x2:int, y2:int, x3:int, y3:int, thick:Number = 1, color:uint = 0, alpha:Number = 1):void
+		public static function curve(x1:Number, y1:Number, x2:Number, y2:Number, x3:Number, y3:Number, color:uint = 0, alpha:Number = 1, thick:Number = 1):void
 		{
 			_graphics.clear();
-			_graphics.lineStyle(thick, color, alpha);
+			_graphics.lineStyle(thick, color & 0xFFFFFF, alpha);
 			_graphics.moveTo(x1 - _camera.x, y1 - _camera.y);
 			_graphics.curveTo(x2 - _camera.x, y2 - _camera.y, x3 - _camera.x, y3 - _camera.y);
 			_target.draw(FP.sprite, null, null, blend);

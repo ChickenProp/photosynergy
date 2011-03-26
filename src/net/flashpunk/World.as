@@ -87,6 +87,22 @@
 		}
 		
 		/**
+		 * Override this; called when game gains focus.
+		 */
+		public function focusGained():void
+		{
+			
+		}
+		
+		/**
+		 * Override this; called when game loses focus.
+		 */
+		public function focusLost():void
+		{
+			
+		}
+		
+		/**
 		 * X position of the mouse in the World.
 		 */
 		public function get mouseX():int
@@ -241,7 +257,7 @@
 		 * Clears stored reycled Entities of the Class type.
 		 * @param	classType		The Class type to clear.
 		 */
-		public function clearRecycled(classType:Class):void
+		public static function clearRecycled(classType:Class):void
 		{
 			var e:Entity = _recycled[classType],
 				n:Entity;
@@ -257,7 +273,7 @@
 		/**
 		 * Clears stored recycled Entities of all Class types.
 		 */
-		public function clearRecycledAll():void
+		public static function clearRecycledAll():void
 		{
 			for (var classType:Object in _recycled) clearRecycled(classType as Class);
 		}
@@ -895,6 +911,27 @@
 		}
 		
 		/**
+		 * Returns the Entity with the instance name, or null if none exists.
+		 * @param	name	Instance name of the Entity.
+		 * @return	An Entity in this world.
+		 */
+		public function getInstance(name:String):*
+		{
+			if (name)
+			{
+				for (var i:Object in _entityNames)
+				{
+					if (_entityNames[i] == name)
+					{
+						if (i._world == this) return i;
+						else delete _entityNames[i];
+					}
+				}
+			}
+			return null;
+		}
+		
+		/**
 		 * Updates the add/remove lists at the end of the frame.
 		 */
 		public function updateLists():void
@@ -916,6 +953,7 @@
 					removeUpdate(e);
 					removeRender(e);
 					if (e._type) removeType(e);
+					if (e._name) unregisterName(e);
 					if (e.autoClear && e._tween) e.clearTweens();
 				}
 				_remove.length = 0;
@@ -930,6 +968,7 @@
 					addUpdate(e);
 					addRender(e);
 					if (e._type) addType(e);
+					if (e._name) registerName(e);
 					e.added();
 				}
 				_add.length = 0;
@@ -1052,6 +1091,19 @@
 			_typeCount[e._type] --;
 		}
 		
+		/** @private Register's the Entity's instance name. */
+		internal function registerName(e:Entity):void
+		{
+			if (e._name) _entityNames[e] = e._name;
+			else unregisterName(e);
+		}
+		
+		/** @private Unregister's the Entity's instance name. */
+		internal function unregisterName(e:Entity):void
+		{
+			if (_entityNames[e]) delete _entityNames[e];
+		}
+		
 		/** @private Calculates the squared distance between two rectangles. */
 		private static function squareRects(x1:Number, y1:Number, w1:Number, h1:Number, x2:Number, y2:Number, w2:Number, h2:Number):Number
 		{
@@ -1113,16 +1165,16 @@
 		/** @private */	private var _count:uint;
 		
 		// Render information.
-		private var _renderFirst:Array = [];
-		private var _renderLast:Array = [];
-		private var _layerList:Array = [];
-		private var _layerCount:Array = [];
-		private var _layerSort:Boolean;
-		private var _tempArray:Array = [];
-		
+		/** @private */	private var _renderFirst:Array = [];
+		/** @private */	private var _renderLast:Array = [];
+		/** @private */	private var _layerList:Array = [];
+		/** @private */	private var _layerCount:Array = [];
+		/** @private */	private var _layerSort:Boolean;
+		/** @private */	private var _tempArray:Array = [];
 		/** @private */	private var _classCount:Dictionary = new Dictionary;
 		/** @private */	internal var _typeFirst:Object = { };
 		/** @private */	private var _typeCount:Object = { };
-		/** @private */	private var _recycled:Dictionary = new Dictionary;
+		/** @private */	private static var _recycled:Dictionary = new Dictionary;
+		/** @private */	internal var _entityNames:Dictionary = new Dictionary;
 	}
 }

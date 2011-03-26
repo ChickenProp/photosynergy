@@ -16,7 +16,6 @@ public class Light extends Entity {
 		var image:* = new Image(LIGHT);
 		image.alpha = 0.7;
 		image.originY = 50;
-		image.y = -50;
 		graphic = image;
 	}
 

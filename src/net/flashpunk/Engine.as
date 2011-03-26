@@ -83,8 +83,10 @@
 		 */
 		public function update():void
 		{
+			if (FP.tweener.active && FP.tweener._tween) FP.tweener.updateTweens();
 			if (FP._world.active)
 			{
+				Tween.update();
 				if (FP._world._tween) FP._world.updateTweens();
 				FP._world.update();
 			}
@@ -117,6 +119,22 @@
 		}
 		
 		/**
+		 * Override this; called when game gains focus.
+		 */
+		public function focusGained():void
+		{
+			
+		}
+		
+		/**
+		 * Override this; called when game loses focus.
+		 */
+		public function focusLost():void
+		{
+			
+		}
+		
+		/**
 		 * Sets the game's stage properties. Override this to set them differently.
 		 */
 		public function setStageProperties():void
@@ -133,6 +151,10 @@
 		{
 			// remove event listener
 			removeEventListener(Event.ADDED_TO_STAGE, onStage);
+			
+			// add focus change listeners
+			stage.addEventListener(Event.ACTIVATE, onActivate);
+			stage.addEventListener(Event.DEACTIVATE, onDeactivate);
 			
 			// set stage properties
 			FP.stage = stage;
@@ -266,6 +288,20 @@
 			FP._world.updateLists();
 			FP._world.begin();
 			FP._world.updateLists();
+		}
+		
+		private function onActivate (e:Event):void
+		{
+			FP.focused = true;
+			focusGained();
+			FP.world.focusGained();
+		}
+		
+		private function onDeactivate (e:Event):void
+		{
+			FP.focused = false;
+			focusLost();
+			FP.world.focusLost();
 		}
 		
 		// Timing information.
