@@ -7,11 +7,15 @@ import net.flashpunk.debug.*;
 public class Game extends World {
 	public var player:Player = null;
 
+	public var platform:Platform = new Platform(150, 250, 50, 50);
+
 	public function Game () {
 		FP.console.log("hi");
 		player = new Player;
 		add(player);
 		add(new Light);
+		add(new Platform(0, 300, 640, 180));
+		add(platform);
 		FP.console.log("hi3");
 	}
 
