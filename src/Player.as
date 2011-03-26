@@ -7,14 +7,8 @@ import net.flashpunk.debug.*;
 import flash.geom.Point;
 
 public class Player extends Entity {
-	public var vel:Point = new Point(0,0);
-
-	public function get pos() : Point {
-		return new Point(x, y);
-	}
-	public function set pos(p:Point) : void {
-		x = p.x; y = p.y;
-	}
+	public var vel:vec = new vec(0,0);
+	public var airborne:Boolean = true;
 
 	public function Player () {
 		x = 20; y = 20;
@@ -26,15 +20,49 @@ public class Player extends Entity {
 	}
 
 	override public function update ():void {
-		var a:Point = new Point(0,0);
+		var a:vec = new vec(0,0);
 
                 if (Input.check(Key.RIGHT))
                         a.x++;
                 if (Input.check(Key.LEFT))
                         a.x--;
-		
-		vel = vel.add(a);
-		pos = pos.add(vel);
+		vel.setadd(a);
+
+		doJumping();
+		doGravity();
+		doFriction();
+
+		x += vel.x;
+		y += vel.y;
+
+		if (y >= 300) {
+			y = 300;
+			vel.y = Math.min(vel.y, 0);
+			airborne = false;
+		}
+		else
+			airborne = true;
+	}
+
+	public var jumpstate:int = 0;
+	public function doJumping () : void {
+		if (!airborne)
+			jumpstate = 0;
+
+		var canjump:* = jumpstate <= 5;
+
+		if (Input.check(Key.SPACE) && canjump) {
+			vel.y -= (airborne ? 1 : 5);
+			jumpstate++;
+		}
+	}
+
+	public function doGravity () : void {
+		vel.y += 0.5;
+	}
+
+	public function doFriction () : void {
+		vel.x *= 0.9;
 	}
 }
 }
