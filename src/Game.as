@@ -13,7 +13,8 @@ public class Game extends World {
 		FP.console.log("hi");
 		player = new Player;
 		add(player);
-		add(new Light);
+		add(new Light(40, 100, -30, -0.1));
+		//add(new Light(300, 100, -150, 0.1));
 		add(new Platform(0, 300, 640, 180));
 		add(platform);
 		FP.console.log("hi3");

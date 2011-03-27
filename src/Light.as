@@ -16,15 +16,17 @@ public class Light extends Entity {
 	public var target:BitmapData = new BitmapData(640, 480);
 	public var shadow:Image = new Image(SHADOW);
 
-	public function Light () {
-		x = 20;
-		y = 100;
+	public var speed:Number = 0;
+	public function Light (_x:Number, _y:Number, _a:Number, _s:Number) {
+		x = _x;
+		y = _y;
+		speed = _s
 
 		var image:* = new Image(LIGHT);
 		image.alpha = 0.7;
-		image.originX = 25;
+		image.originX = 10;
 		image.originY = 57;
-		image.angle = -30;
+		image.angle = _a;
 		graphic = image;
 
 		shadow.blend = "erase";
@@ -33,8 +35,7 @@ public class Light extends Entity {
 	}
 
 	override public function update () : void {
-		(graphic as Image).angle -= 0.1;
-		originY += 0;
+		(graphic as Image).angle += speed;
 	}
 
 	override public function render () : void {
@@ -52,15 +53,22 @@ public class Light extends Entity {
 		var dx:Number = p.right - x;
 		var dy:Number = p.top - y;
 
-		if (dx > 0) {
-			var height:Number = p.height;
-			var width:Number = dx / dy * height;
+		if (dx > 0)
+			drawShadow(p.right, p.top, dx/dy*p.height, p.height);
 
-			shadow.scaleX = width/100;
-			shadow.scaleY = height/100;
-
-			shadow.render(target, new Point(p.right, p.top), FP.camera);
-		}
+		dx = p.left - x;
+		if (dx < 0)
+			drawShadow(p.left, p.top, dx/dy*p.height, p.height);
 	}
+
+	// To flip the shadow, just make width or height negative.
+	public function drawShadow(x:Number, y:Number, w:Number, h:Number)
+	: void {
+		shadow.scaleX = w/100;
+		shadow.scaleY = h/100;
+
+		shadow.render(target, new Point(x, y), FP.camera);
+	}
+
 }
 }
