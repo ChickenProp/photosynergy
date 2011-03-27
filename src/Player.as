@@ -17,12 +17,9 @@ public class Player extends Entity {
 		height = (graphic as Text).height;
 		//(graphic as Text).centerOrigin();
 		type = "player";
-
-		FP.console.log("hi2");
 	}
 
 	override public function update ():void {
-		FP.console.log("hi4");
 		var a:vec = new vec(0,0);
 
                 if (Input.check(Key.RIGHT))
@@ -35,12 +32,10 @@ public class Player extends Entity {
 		doGravity();
 		doFriction();
 
-		var leftWall:Number = (FP.world as Game).leftWall(x, y);
-		var rightWall:Number = (FP.world as Game).rightWall(x, y);
-
 		moveBy(vel.x, vel.y, "platform", true);
 
-		if (collide("platform", x, y+1)) {
+		var e:Entity = collide("platform", x, y+1);
+		if (e && (!(e is ThinPlatform) || bottom <= e.top)) {
 			vel.y = 0;
 			airborne = false;
 		}
@@ -48,9 +43,9 @@ public class Player extends Entity {
 			airborne = true;
 
 		var sign:int = (vel.x == 0 ? 0 : vel.x > 0 ? 1 : -1);
-		if (collide("platform", x + sign, y))
+		e = collide("platform", x + sign, y);
+		if (e && !(e is ThinPlatform))
 			vel.x = 0;
-		FP.console.log("hi5");
 	}
 
 	public var jumpstate:int = 0;
@@ -72,6 +67,22 @@ public class Player extends Entity {
 
 	public function doFriction () : void {
 		vel.x *= 0.9;
+	}
+
+	override public function moveCollideY(e:Entity) : Boolean {
+		// Don't hit thin platforms from below.
+		if (e is ThinPlatform && vel.y < 0)
+			return false;
+
+		// But fall back through them if we didn't get all the way.
+		if (e is ThinPlatform && bottom > e.top)
+			return false;
+
+		return true;
+	}
+
+	override public function moveCollideX(e:Entity) : Boolean {
+		return !(e is ThinPlatform);
 	}
 }
 }
